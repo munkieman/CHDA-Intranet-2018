@@ -1,0 +1,387 @@
+<%@ Register TagPrefix="WpNs1" Namespace="Microsoft.SharePoint.Publishing.WebControls" Assembly="Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"%>
+<%@ Register TagPrefix="WpNs0" Namespace="Microsoft.Office.Server.Search.WebControls" Assembly="Microsoft.Office.Server.Search, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"%>
+<%-- **************************************************
+     Site   : CHDA - ABOUT SMT
+     Page   : Homepage
+     Author : Jason Clark
+     Date   : March 2016
+
+     ************************************************** --%>
+
+<%-- _lcid="1033" _version="15.0.4420" _dal="1" --%>
+<%-- _LocalBinding --%>
+<%@ Page language="C#" MasterPageFile="~masterurl/custom.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=15.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" meta:progid="SharePoint.WebPartPage.Document"  %>
+<%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %> <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %> <%@ Import Namespace="Microsoft.SharePoint" %> <%@ Assembly Name="Microsoft.Web.CommandUI, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %> <%@ Register Tagprefix="WebPartPages" Namespace="Microsoft.SharePoint.WebPartPages" Assembly="Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+
+<%-- *** Change the browser tab / favourite page name --%>
+<asp:Content ContentPlaceHolderId="PlaceHolderPageTitle" runat="server">
+    CHDA Intranet | Latest News
+</asp:Content>
+
+<%-- *** Change the displayed page name --%>
+<asp:Content ContentPlaceHolderID="PlaceHolderPageTitleInTitleArea" runat="server">
+	About &gt; Latest News   
+</asp:Content>
+
+<%-- *** Page Logo --%>
+<asp:Content ContentPlaceHolderID="PlaceHolderPageLogo" runat="server">
+	<?xml version="1.0" encoding="utf-8"?>
+	<svg class="pageLogo" xmlns="http://www.w3.org/2000/svg" height="128" width="128" viewBox="0 0 128 128">
+	  <g>
+	    <rect height="128" width="128" fill="#716439" />
+	    <path id="path1" transform="rotate(0,64,64) translate(58.0011250972748,30) scale(2.125,2.125)  " fill="#FFFFFF" d="M0.049011231,9.8080139L5.5970193,9.8080139 5.5970193,32 0.049011231,32z M2.823,0C4.3819914,0 5.646,1.2640076 5.646,2.8230286 5.646,4.3830261 4.3819914,5.6470032 2.823,5.6470032 1.2640085,5.6470032 -5.6017598E-08,4.3830261 0,2.8230286 -5.6017598E-08,1.2640076 1.2640085,0 2.823,0z" />
+	  </g>
+	</svg>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderId="PlaceHolderMain" runat="server">
+
+    <!-- SCRIPTS -->
+    <script type="text/javascript" src="/about/SiteAssets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/ajax/libs/jquery.SPServices/2014.02/jquery.SPServices.min.js"></script>
+    <script type="text/javascript" src="/Style Library/scripts/SPServices.min.js"></script>
+    <%--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>--%>
+
+    <!-- STYLES -->
+    <link rel="stylesheet" type="text/css" href="/_catalogs/masterpage/ShareBoot/css/font-awesome.css" />
+  
+    <div class="ms-core-tableNoSpace ms-webpartPage-root" id="_invisibleIfEmpty" name="_invisibleIfEmpty">
+        
+        <div class="row rowMain newsTabs">			    
+            <ul class="nav nav-pills">
+                <li class="active"><a data-toggle="pill" href="#top">Top Stories</a></li>
+                <li><a data-toggle="pill" href="#all">All Stories</a></li>                            
+                <li><a data-toggle="pill" href="#corp">Corporate</a></li>
+                <li><a data-toggle="pill" href="#hr">HR</a></li>
+                <li><a data-toggle="pill" href="#it">IT</a></li>
+                <li><a data-toggle="pill" href="#ops">Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row rowMain">
+                <div class="col-md-4 newsTabContainer">
+                    <div class="tab-content">
+                        <div id="top" class="tab-pane fade in active">
+                            <div class="row">
+                                <div class="newsMast" id="topNews"></div>  
+                            </div>                       
+                        </div>
+                        <div id="all" class="tab-pane fade">
+                            <div class="row">
+                                <div class="newsMast" id="allNews"></div>                                                    
+                            </div>
+                        </div>
+                        <div id="corp" class="tab-pane fade">
+                            <div id="corpNews"></div>
+                       </div>
+                        <div id="hr" class="tab-pane fade">
+                            <div id="hrNews"></div>
+                         </div>
+                        <div id="it" class="tab-pane fade">
+                            <div id="itNews"></div>
+                        </div>
+                        <div id="ops" class="tab-pane fade">
+                            <div id="opsNews"></div>
+                        </div>
+                    </div>                              
+                </div>
+                <div class="col-md-8 newsDetailContainer">
+                    <div id="newsDetail"></div> 
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <script type="text/javascript">
+	 
+        if(typeof(MSOLayout_MakeInvisibleIfEmpty) == "function") 				 
+	    {
+            MSOLayout_MakeInvisibleIfEmpty();
+        }               
+
+        /* IDEA!!
+           create a slideshow to cycle through all the featured stories until an item is clicked on
+           default to featured if no item has been chosen
+
+           function showFeatured()
+        */
+
+        $(document).ready(function () {
+
+            getNewsItems();
+            alert('hello');
+           
+        });
+
+        function getNewsItems() {
+
+            var method = "GetListItems";
+            var list = "LatestNews";
+            var fields = "<ViewFields>" +
+                            "<FieldRef Name='ID' />" +
+							"<FieldRef Name='Title' />" +
+							"<FieldRef Name='NewsTopic' />" +							
+							"<FieldRef Name='ImageThumb' />" +
+							"<FieldRef Name='NewsHeadline' />" +
+                            "<FieldRef Name='endDate' />" +
+							//"<FieldRef Name='startDate' />" +
+					     "</ViewFields>";                             
+	
+            $().SPServices({
+                operation: method,
+                async: false,
+                listName: list,
+                CAMLViewFields: fields,
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).SPFilterNode("z:row").each(function () {                                                                      
+
+                        // assign SP list item
+                        var ID = ($(this).attr("ows_ID"));
+                        var newsTitle = ($(this).attr("ows_Title"));
+                        var newsTopic = ($(this).attr("ows_NewsTopic"));
+                        var newsThumb = ($(this).attr("ows_ImageThumb").split(",")[0]);
+                        //var newsThumb = "";
+                        var newsHeadline = ($(this).attr("ows_NewsHeadline"));                      
+                        var endDate = ($(this).attr("ows_endDate"));
+                        //var startDate = ($(this).attr("ows_startDate"));                  
+
+                        newsHeadline = jQuery(newsHeadline).text();
+                                              
+                        // ***** cleanup newsTopic string *****
+                        var topics = newsTopic.split(";");
+                        //var newsTag = "";
+
+                        alert(ID);
+
+                        // ***** reformat start date in normalised format *****
+                        //startYYYY = startDate.substr(0, 4);
+                        //startMM = startDate.substr(5, 2);
+                        //startDD = startDate.substr(8, 2);
+
+                        //startDate = startMM + '/' + startDD + '/' + startYYYY;
+
+                        // ***** reformat end date in normalised format *****
+                        endYYYY = endDate.substr(10, 4);
+                        endMM = endDate.substr(15, 2);
+                        endDD = endDate.substr(18, 2);
+
+                        endDate = endMM + '/' + endDD + '/' + endYYYY;
+
+                        // ***** setup variables *****
+                        var today = new Date();
+                        var dd = today.getDate();
+                        var mm = today.getMonth() + 1; //January is 0
+                        var yyyy = today.getFullYear();
+
+                        if (dd < 10) {
+                            dd = '0' + dd;
+                        }
+
+                        if (mm < 10) {
+                            mm = '0' + mm;
+                        }
+
+                        today = mm + '/' + dd + '/' + yyyy;
+
+                        // ***** check if new item is still within publication dates
+                        //if (startDate <= today) {
+                            if (endDate >= today) {
+
+                                for (i = 1; i <= topics.length; i++) {
+                                    newsTag = checkTopics(topics[i]);
+
+                                    $(newsTag).append("<div class='row news'>" +
+                                                            "<a href='#' onclick='getArticle(" + ID + ");return false;'>" +
+                                                                "<div class='col-md-3'>" +
+                                                                    "<img alt='News Thumbnail' src='" + newsThumb + "' width='150' height='100' />" +
+                                                                "</div>" +
+                                                            "</a>" +
+                                                            "<div class='col-md-9 text-left'>" +
+                                                                "<h2>" + newsTitle + "</h2>" +
+                                                                "<div class='newsHeadline'>" + newsHeadline + "</div>" +
+                                                            "</div>" +
+                                                            "</div>" +
+                                                            "</br>");
+                                }
+
+                                $("#allNews").append("<div class='row news'>" +
+                                                        "<a href='#' onclick='getArticle(" + ID + ");return false;'>" +
+                                                            "<div class='col-md-3'>" +
+                                                                "<img alt='News Thumbnail' src='" + newsThumb + "' width='150' height='100' />" +
+                                                            "</div>" +
+                                                        "</a>" +
+                                                        "<div class='col-md-9 text-left'>" +
+                                                            "<h2>" + newsTitle + "</h2>" +
+                                                            "<div class='newsHeadline'>" + newsHeadline + "</div>" +
+                                                        "</div>" +
+                                                        "</div>" +
+                                                        "</br>");
+
+                            };
+                        //}
+                    });                 
+                }
+            });
+        };
+
+        //function checkTopics(topicList) {
+
+        function checkTopics(tmpTopic) {
+
+            //alert(topicList + " : " + topicList.length);
+
+            //var tmpTag = [];
+
+            //for (i = 1; i <= topicList.length; i++) {
+
+            //    var tmpTopic = topicList[i];
+
+            if (tmpTopic.length >= 2) {
+                tmpTopic = tmpTopic.substr(1, tmpTopic.length);
+
+                switch (tmpTopic) {
+                    case "Top":
+                        //tmpTag = ;
+                        return "#topNews";
+                        break;
+
+                    case "Corporate":
+                        tmpTag = "#corpNews";
+                        return tmpTag;
+                        break;
+
+                    case "HR":
+                        tmpTag = "#hrNews";
+                        return tmpTag;
+                        break;
+
+                    case "IT":
+                        tmpTag = "#itNews";
+                        return tmpTag;
+                        break;
+
+                    case "Operations":
+                        tmpTag = "#opsNews";
+                        return tmpTag;
+                        break;
+
+                    default:
+                        break;
+                };
+            };
+        };
+
+
+        function clearDetails() {
+            $("#newsDetail").empty();
+        }
+
+        function getArticle(articleID) {
+
+            clearDetails();
+
+            var method = "GetListItems";
+            var list = "LatestNews";
+            var fields = "<ViewFields>" +                           
+							"<FieldRef Name='Title' />" +						
+							"<FieldRef Name='NewsImage' />" +
+							"<FieldRef Name='NewsLink' />" +
+                            "<FieldRef Name='MainText' />" +
+					     "</ViewFields>";
+            var query = "<Query><Where><Eq><FieldRef Name='ID' /><Value Type='Number'>" + articleID + "</Value></Eq></Where></Query>";
+
+            $().SPServices({
+                operation: method,
+                async: false,
+                listName: list,
+                CAMLViewFields: fields,
+                CAMLQuery: query,
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).find("z\\:row").each(function () {  
+
+                        // assign SP list item
+                        var newsTitle = ($(this).attr("ows_Title"));                      
+                        var newsImage = ($(this).attr("ows_NewsImage").split(",")[0]);
+                        var newsLink = ($(this).attr("ows_NewsLink").split(",")[0]);
+                        var newsText = ($(this).attr("ows_MainText"));                       
+
+                        $("#newsDetail").append("<img alt='Main Image' src='" + newsImage + "' width='100%' height='250px' />" +                                                
+                                                "<h2>" + newsTitle + "</h2>" +
+                                                "<a href='" + newsLink + "' target='_blank'>View Full Page</a>" +
+                                                "<p class='text-justify'>" + newsText + "</p>");                                          
+                    });
+                }
+            });
+        };
+
+    </script>
+	
+    <div class="ms-hide">
+        <WebPartPages:WebPartZone runat="server" title="loc:TitleBar" id="TitleBar" AllowLayoutChange="false" AllowPersonalization="false" Style="display:none;" __designer:Preview="&lt;Regions&gt;&lt;Region Name=&quot;0&quot; Editable=&quot;True&quot; Content=&quot;&quot; NamingContainer=&quot;True&quot; /&gt;&lt;/Regions&gt;&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; id=&quot;TitleBar&quot; style=&quot;display:none;&quot;&gt;
+	&lt;tr&gt;
+		&lt;td style=&quot;white-space:nowrap;&quot;&gt;&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; style=&quot;width:100%;&quot;&gt;
+			&lt;tr&gt;
+				&lt;td style=&quot;white-space:nowrap;&quot;&gt;Title Bar&lt;/td&gt;
+			&lt;/tr&gt;
+		&lt;/table&gt;&lt;/td&gt;
+	&lt;/tr&gt;&lt;tr&gt;
+		&lt;td style=&quot;height:100%;&quot;&gt;&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; style=&quot;border-color:Gray;border-width:1px;border-style:Solid;width:100%;height:100%;&quot;&gt;
+			&lt;tr valign=&quot;top&quot;&gt;
+				&lt;td _designerRegion=&quot;0&quot;&gt;&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; style=&quot;width:100%;&quot;&gt;
+					&lt;tr&gt;
+						&lt;td style=&quot;height:100%;&quot;&gt;&lt;/td&gt;
+					&lt;/tr&gt;
+				&lt;/table&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+		&lt;/table&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;" __designer:Values="&lt;P N=&#39;Title&#39; ID=&#39;1&#39; T=&#39;Title Bar&#39; /&gt;&lt;P N=&#39;AllowPersonalization&#39; T=&#39;False&#39; /&gt;&lt;P N=&#39;HeaderText&#39; T=&#39;loc:TitleBar&#39; /&gt;&lt;P N=&#39;DisplayTitle&#39; R=&#39;1&#39; /&gt;&lt;P N=&#39;AllowLayoutChange&#39; T=&#39;False&#39; /&gt;&lt;P N=&#39;ID&#39; ID=&#39;2&#39; T=&#39;TitleBar&#39; /&gt;&lt;P N=&#39;LockLayout&#39; T=&#39;True&#39; /&gt;&lt;P N=&#39;HasAttributes&#39; T=&#39;True&#39; /&gt;&lt;P N=&#39;Page&#39; ID=&#39;3&#39; /&gt;&lt;P N=&#39;TemplateControl&#39; R=&#39;3&#39; /&gt;&lt;P N=&#39;AppRelativeTemplateSourceDirectory&#39; R=&#39;-1&#39; /&gt;" __designer:Templates="&lt;Group Name=&quot;ZoneTemplate&quot;&gt;&lt;Template Name=&quot;ZoneTemplate&quot; Content=&quot;&quot; /&gt;&lt;/Group&gt;"><ZoneTemplate>
+<spsswc:ContentBySearchWebPart runat="server" AlwaysRenderOnServer="False" ResultType="" DataProviderJSON="{&quot;Properties&quot;:{&quot;TryCache&quot;:true,&quot;Scope&quot;:&quot;{Site.URL}&quot;,&quot;UpdateLinksForCatalogItems&quot;:true,&quot;EnableStacking&quot;:true},&quot;PropertiesJson&quot;:&quot;{\&quot;TryCache\&quot;:true,\&quot;Scope\&quot;:\&quot;{Site.URL}\&quot;,\&quot;UpdateLinksForCatalogItems\&quot;:true,\&quot;EnableStacking\&quot;:true}&quot;,&quot;QueryGroupName&quot;:&quot;Default&quot;,&quot;QueryPropertiesTemplateUrl&quot;:&quot;querygroup://webroot/SitePages/latestNews.aspx?groupname=Default&quot;,&quot;IgnoreQueryPropertiesTemplateUrl&quot;:false,&quot;SourceID&quot;:&quot;BA63BBAE-FA9C-42C0-B027-9A878F16557C&quot;,&quot;SourceName&quot;:null,&quot;SourceLevel&quot;:null,&quot;CollapseSpecification&quot;:&quot;&quot;,&quot;QueryTemplate&quot;:&quot;{searchboxquery}&quot;,&quot;FallbackSort&quot;:null,&quot;FallbackSortJson&quot;:&quot;null&quot;,&quot;RankRules&quot;:null,&quot;RankRulesJson&quot;:&quot;null&quot;,&quot;AsynchronousResultRetrieval&quot;:false,&quot;SendContentBeforeQuery&quot;:true,&quot;BatchClientQuery&quot;:true,&quot;FallbackLanguage&quot;:-1,&quot;FallbackRankingModelID&quot;:&quot;&quot;,&quot;EnableStemming&quot;:true,&quot;EnablePhonetic&quot;:false,&quot;EnableNicknames&quot;:false,&quot;EnableInterleaving&quot;:false,&quot;EnableQueryRules&quot;:true,&quot;EnableOrderingHitHighlightedProperty&quot;:false,&quot;HitHighlightedMultivaluePropertyLimit&quot;:-1,&quot;IgnoreContextualScope&quot;:true,&quot;ScopeResultsToCurrentSite&quot;:false,&quot;TrimDuplicates&quot;:true,&quot;ClientType&quot;:&quot;ContentSearchRegular&quot;,&quot;UpdateAjaxNavigate&quot;:true,&quot;SummaryLength&quot;:180,&quot;DesiredSnippetLength&quot;:90,&quot;PersonalizedQuery&quot;:false,&quot;FallbackRefinementFilters&quot;:null,&quot;IgnoreStaleServerQuery&quot;:false,&quot;RenderTemplateId&quot;:&quot;&quot;,&quot;AlternateErrorMessage&quot;:null,&quot;Title&quot;:&quot;&quot;}" BypassResultTypes="True" ItemTemplateId="~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/Item_Picture3Lines.js" GroupTemplateId="~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/Group_Content.js" ResultsPerPage="3" SelectedPropertiesJson="[&quot;PublishingImage&quot;,&quot;PictureURL&quot;,&quot;PictureThumbnailURL&quot;,&quot;Path&quot;,&quot;Title&quot;,&quot;Description&quot;,&quot;SecondaryFileExtension&quot;,&quot;ContentTypeId&quot;]" HitHighlightedPropertiesJson="[&quot;Title&quot;,&quot;Path&quot;,&quot;Author&quot;,&quot;SectionNames&quot;,&quot;SiteDescription&quot;]" AvailableSortsJson="null" ShowBestBets="False" ShowPersonalFavorites="False" ShowDefinitions="False" ShowDidYouMean="False" PreloadedItemTemplateIdsJson="null" ShowAlertMe="False" QueryGroupName="Default" RenderTemplateId="~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/Control_List.js" StatesJson="{}" ServerIncludeScriptsJson="null" Title="Content Search" FrameType="None" SuppressWebPartChrome="False" Description="Content Search Web Part will allow you to show items that are results of a search query you specify. 
+When you add it to the page, this Web Part will show recently modified items from the current site. You can change this setting to show items from another site or list by editing the Web Part and changing its search criteria.
+As new content is discovered by search, this Web Part will display an updated list of items each time the page is viewed." IsIncluded="False" ZoneID="WebPartZone1" PartOrder="0" FrameState="Normal" AllowRemove="True" AllowZoneChange="True" AllowMinimize="True" AllowConnect="True" AllowEdit="True" AllowHide="True" IsVisible="True" DetailLink="" HelpLink="" HelpMode="Modeless" Dir="Default" PartImageSmall="" MissingAssembly="Cannot import this Web Part." PartImageLarge="" IsIncludedFilter="" ExportControlledProperties="True" ConnectionID="00000000-0000-0000-0000-000000000000" ID="g_0f08a5f8_5ae3_44ba_94e7_7912370070ca" ChromeType="None" ExportMode="All" WebPart="true" Height="" Width="" __WebPartId="{0F08A5F8-5AE3-44BA-94E7-7912370070CA}" __MarkupType="xmlmarkup" __Preview="&lt;div class=&quot;ms-webpart-chrome ms-webpart-chrome-vertical ms-webpart-chrome-fullWidth &quot;&gt;
+	&lt;div class=&quot;ms-webpart-chrome-title&quot; id=&quot;WebPartWPQ1_ChromeTitle&quot;&gt;
+		&lt;span title=&quot;Error - An unexpected error has been encountered in this Web Part.&quot; id=&quot;WebPartTitleWPQ1&quot; class=&quot;js-webpart-titleCell&quot;&gt;&lt;div class=&quot;ms-webpart-titleText&quot;&gt;&lt;nobr&gt;&lt;span&gt;Error&lt;/span&gt;&lt;span id=&quot;WebPartCaptionWPQ1&quot;&gt;&lt;/span&gt;&lt;/nobr&gt;&lt;/div&gt;&lt;/span&gt;
+	&lt;/div&gt;&lt;div WebPartID=&quot;0f08a5f8-5ae3-44ba-94e7-7912370070ca&quot; HasPers=&quot;false&quot; id=&quot;WebPartWPQ1&quot; width=&quot;100%&quot; class=&quot;ms-WPBody ms-WPBorder ms-wpContentDivSpace &quot; allowMinimize=&quot;false&quot; allowDelete=&quot;false&quot; style=&quot;&quot; &gt;&lt;div id=&quot;WebPartContent&quot;&gt;&lt;div class=&quot;UserGeneric&quot; errorwebpart=&quot;1&quot;&gt;
+	&lt;span class=&quot;ms-bold&quot;&gt;Web Part Error: &lt;/span&gt;Unknown server tag. Correlation ID: 4503869d-9622-2024-b01a-8c7d04eb71bf.
+&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ms-clear&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;" __Error="Unknown server tag."></spsswc:ContentBySearchWebPart>
+<WpNs1:ContentByQueryWebPart runat="server" ItemStyle="Default" GroupStyle="Band" ContentTypeName="Announcement" WebUrl="~sitecollection/about" ListGuid="e6b10b5f-cae5-4d29-9982-8b80ad4673b8" FilterField1="Expires" Filter2ChainingOperator="Or" FilterOperator1="Geq" FilterDisplayValue1="[Today]" FilterValue1="[Today]" FilterType1="DateTime" DataMappingViewFields="{52e5dcad-19fe-4571-a6af-7d48891ea098},URL;{5248da29-d4f6-49f8-a0d1-705b7d34aea3},URL;{fa564e0f-0c70-4ab9-b863-0177e6ddd247},Text;{7662cd2c-f069-4dba-9e35-082cf976e170},Note;" GroupByDirection="Desc" SortBy="Created" SortByFieldType="DateTime" SortByDirection="Desc" ItemLimit="10" DataMappings="Description:{7662cd2c-f069-4dba-9e35-082cf976e170},Body,Note;|ImageUrl:{5248da29-d4f6-49f8-a0d1-705b7d34aea3},Picture,URL;|Title:{fa564e0f-0c70-4ab9-b863-0177e6ddd247},Title,Text;|LinkUrl:{52e5dcad-19fe-4571-a6af-7d48891ea098},Link,URL;|" ServerTemplate="104" ShowUntargetedItems="False" EnableOriginalValue="False" ViewFlag="0" ViewContentTypeId="" ListUrl="" ListDisplayName="" ListId="00000000-0000-0000-0000-000000000000" PageSize="-1" UseSQLDataSourcePaging="True" DataSourceID="" ShowWithSampleData="False" AsyncRefresh="False" ManualRefresh="False" AutoRefresh="False" AutoRefreshInterval="60" NoDefaultStyle="" InitialAsyncDataFetch="False" Title="Content Query" FrameType="None" SuppressWebPartChrome="False" Description="Displays a dynamic view of content from your site." IsIncluded="True" ZoneID="TitleBar" PartOrder="2" FrameState="Normal" AllowRemove="True" AllowZoneChange="True" AllowMinimize="True" AllowConnect="True" AllowEdit="True" AllowHide="True" IsVisible="True" DetailLink="" HelpLink="" HelpMode="Modeless" Dir="Default" PartImageSmall="" MissingAssembly="Cannot import this Web Part." PartImageLarge="" IsIncludedFilter="" ExportControlledProperties="True" ConnectionID="00000000-0000-0000-0000-000000000000" ID="g_27e9e6b7_359c_4209_8281_905d6347142c" ChromeType="None" ExportMode="All" __designer:Values="&lt;P N=&#39;ItemStyle&#39; T=&#39;Default&#39; /&gt;&lt;P N=&#39;GroupStyle&#39; T=&#39;Band&#39; /&gt;&lt;P N=&#39;ContentTypeName&#39; T=&#39;Announcement&#39; /&gt;&lt;P N=&#39;WebUrl&#39; T=&#39;~sitecollection/about&#39; /&gt;&lt;P N=&#39;ListGuid&#39; T=&#39;e6b10b5f-cae5-4d29-9982-8b80ad4673b8&#39; /&gt;&lt;P N=&#39;FilterField1&#39; T=&#39;Expires&#39; /&gt;&lt;P N=&#39;Filter2ChainingOperator&#39; E=&#39;1&#39; /&gt;&lt;P N=&#39;FilterOperator1&#39; E=&#39;3&#39; /&gt;&lt;P N=&#39;FilterDisplayValue1&#39; ID=&#39;1&#39; T=&#39;[Today]&#39; /&gt;&lt;P N=&#39;FilterValue1&#39; R=&#39;1&#39; /&gt;&lt;P N=&#39;FilterType1&#39; ID=&#39;2&#39; T=&#39;DateTime&#39; /&gt;&lt;P N=&#39;DataMappingViewFields&#39; T=&#39;{52e5dcad-19fe-4571-a6af-7d48891ea098},URL;{5248da29-d4f6-49f8-a0d1-705b7d34aea3},URL;{fa564e0f-0c70-4ab9-b863-0177e6ddd247},Text;{7662cd2c-f069-4dba-9e35-082cf976e170},Note;&#39; /&gt;&lt;P N=&#39;GroupByDirection&#39; E=&#39;1&#39; /&gt;&lt;P N=&#39;SortBy&#39; T=&#39;Created&#39; /&gt;&lt;P N=&#39;SortByFieldType&#39; R=&#39;2&#39; /&gt;&lt;P N=&#39;SortByDirection&#39; E=&#39;1&#39; /&gt;&lt;P N=&#39;ItemLimit&#39; T=&#39;10&#39; /&gt;&lt;P N=&#39;DataMappings&#39; T=&#39;Description:{7662cd2c-f069-4dba-9e35-082cf976e170},Body,Note;|ImageUrl:{5248da29-d4f6-49f8-a0d1-705b7d34aea3},Picture,URL;|Title:{fa564e0f-0c70-4ab9-b863-0177e6ddd247},Title,Text;|LinkUrl:{52e5dcad-19fe-4571-a6af-7d48891ea098},Link,URL;|&#39; /&gt;&lt;P N=&#39;ServerTemplate&#39; T=&#39;104&#39; /&gt;&lt;P N=&#39;ShowUntargetedItems&#39; T=&#39;False&#39; /&gt;&lt;P N=&#39;Xsl&#39; T=&#39;&amp;lt;xsl:stylesheet xmlns:x=&quot;http://www.w3.org/2001/XMLSchema&quot; version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; xmlns:cmswrt=&quot;http://schemas.microsoft.com/WebPart/v3/Publishing/runtime&quot; exclude-result-prefixes=&quot;xsl cmswrt x&quot; &amp;gt; &amp;lt;xsl:import href=&quot;/Style Library/XSL Style Sheets/Header.xsl&quot; /&amp;gt; &amp;lt;xsl:import href=&quot;/Style Library/XSL Style Sheets/ItemStyle.xsl&quot; /&amp;gt; &amp;lt;xsl:import href=&quot;/Style Library/XSL Style Sheets/ContentQueryMain.xsl&quot; /&amp;gt; &amp;lt;/xsl:stylesheet&amp;gt;&#39; /&gt;&lt;P N=&#39;ViewFlags&#39; E=&#39;0&#39; /&gt;&lt;P N=&#39;SampleData&#39; T=&#39;&amp;lt;dsQueryResponse&amp;gt;&amp;#xD;&amp;#xA;                    &amp;lt;Rows&amp;gt;&amp;#xD;&amp;#xA;                        &amp;lt;Row Title=&quot;Item 1&quot; LinkUrl=&quot;http://Item1&quot; Group=&quot;Group Header&quot; __begincolumn=&quot;True&quot; __begingroup=&quot;True&quot; /&amp;gt;&amp;#xD;&amp;#xA;                        &amp;lt;Row Title=&quot;Item 2&quot; LinkUrl=&quot;http://Item2&quot; __begincolumn=&quot;False&quot; __begingroup=&quot;False&quot; /&amp;gt;&amp;#xD;&amp;#xA;                        &amp;lt;Row Title=&quot;Item 3&quot; LinkUrl=&quot;http://Item3&quot; __begincolumn=&quot;False&quot; __begingroup=&quot;False&quot; /&amp;gt;&amp;#xD;&amp;#xA;                    &amp;lt;/Rows&amp;gt;&amp;#xD;&amp;#xA;                    &amp;lt;/dsQueryResponse&amp;gt;&#39; /&gt;&lt;P N=&#39;ParameterValues&#39; Serial=&#39;AAEAAAD/////AQAAAAAAAAAMAgAAAFhNaWNyb3NvZnQuU2hhcmVQb2ludCwgVmVyc2lvbj0xNS4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MWU5YmNlMTExZTk0MjljBQEAAAA9TWljcm9zb2Z0LlNoYXJlUG9pbnQuV2ViUGFydFBhZ2VzLlBhcmFtZXRlck5hbWVWYWx1ZUhhc2h0YWJsZQEAAAAFX2NvbGwDHFN5c3RlbS5Db2xsZWN0aW9ucy5IYXNodGFibGUCAAAACQMAAAAEAwAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuSGFzaHRhYmxlBwAAAApMb2FkRmFjdG9yB1ZlcnNpb24IQ29tcGFyZXIQSGFzaENvZGVQcm92aWRlcghIYXNoU2l6ZQRLZXlzBlZhbHVlcwAAAwMABQULCBxTeXN0ZW0uQ29sbGVjdGlvbnMuSUNvbXBhcmVyJFN5c3RlbS5Db2xsZWN0aW9ucy5JSGFzaENvZGVQcm92aWRlcgjsUTg/AQAAAAoKAwAAAAkEAAAACQUAAAAQBAAAAAEAAAAGBgAAAApGaWx0ZXJMaW5rEAUAAAABAAAABgcAAAABPws&#39; /&gt;&lt;P N=&#39;FilterValues&#39; Serial=&#39;AAEAAAD/////AQAAAAAAAAAMAgAAAFhNaWNyb3NvZnQuU2hhcmVQb2ludCwgVmVyc2lvbj0xNS4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MWU5YmNlMTExZTk0MjljBQEAAAA9TWljcm9zb2Z0LlNoYXJlUG9pbnQuV2ViUGFydFBhZ2VzLlBhcmFtZXRlck5hbWVWYWx1ZUhhc2h0YWJsZQEAAAAFX2NvbGwDHFN5c3RlbS5Db2xsZWN0aW9ucy5IYXNodGFibGUCAAAACgs&#39; /&gt;&lt;P N=&#39;CanHaveServerControls&#39; T=&#39;True&#39; /&gt;&lt;P N=&#39;Title&#39; ID=&#39;3&#39; T=&#39;Content Query&#39; /&gt;&lt;P N=&#39;FrameType&#39; E=&#39;0&#39; /&gt;&lt;P N=&#39;Description&#39; T=&#39;Displays a dynamic view of content from your site.&#39; /&gt;&lt;P N=&#39;ZoneID&#39; T=&#39;TitleBar&#39; /&gt;&lt;P N=&#39;PartOrder&#39; T=&#39;2&#39; /&gt;&lt;P N=&#39;Width&#39; T=&#39;800px&#39; /&gt;&lt;P N=&#39;ID&#39; T=&#39;g_27e9e6b7_359c_4209_8281_905d6347142c&#39; /&gt;&lt;P N=&#39;StorageKey&#39; T=&#39;27e9e6b7-359c-4209-8281-905d6347142c&#39; /&gt;&lt;P N=&#39;Qualifier&#39; T=&#39;WPQ2&#39; /&gt;&lt;P N=&#39;ClientName&#39; T=&#39;varPartWPQ2&#39; /&gt;&lt;P N=&#39;Permissions&#39; E=&#39;0&#39; /&gt;&lt;P N=&#39;EffectiveTitle&#39; R=&#39;3&#39; /&gt;&lt;P N=&#39;EffectiveStorage&#39; E=&#39;2&#39; /&gt;&lt;P N=&#39;EffectiveFrameType&#39; E=&#39;0&#39; /&gt;&lt;P N=&#39;ChromeType&#39; E=&#39;2&#39; /&gt;&lt;P N=&#39;DisplayTitle&#39; R=&#39;3&#39; /&gt;&lt;P N=&#39;ExportMode&#39; E=&#39;1&#39; /&gt;&lt;P N=&#39;IsShared&#39; T=&#39;True&#39; /&gt;&lt;P N=&#39;IsStandalone&#39; T=&#39;False&#39; /&gt;&lt;P N=&#39;IsStatic&#39; T=&#39;False&#39; /&gt;&lt;P N=&#39;WebBrowsableObject&#39; R=&#39;0&#39; /&gt;&lt;P N=&#39;Width&#39; T=&#39;800px&#39; /&gt;&lt;P N=&#39;ZoneIndex&#39; T=&#39;2&#39; /&gt;&lt;P N=&#39;Page&#39; ID=&#39;4&#39; /&gt;&lt;P N=&#39;TemplateControl&#39; R=&#39;4&#39; /&gt;&lt;P N=&#39;AppRelativeTemplateSourceDirectory&#39; R=&#39;-1&#39; /&gt;" __designer:Preview="&lt;Regions&gt;&lt;Region Name=&quot;0&quot; Editable=&quot;True&quot; Content=&quot;&quot; NamingContainer=&quot;True&quot; /&gt;&lt;/Regions&gt;&lt;div class=&quot;ms-webpart-chrome ms-webpart-chrome-vertical &quot; style=&quot;width:800px&quot;&gt;
+	&lt;div WebPartID=&quot;27e9e6b7-359c-4209-8281-905d6347142c&quot; HasPers=&quot;false&quot; id=&quot;WebPartWPQ2&quot; class=&quot;ms-WPBody &quot; allowDelete=&quot;false&quot; style=&quot;width:800px;overflow:auto;&quot; &gt;&lt;div id=&quot;WebPartContent&quot;&gt;
+		&lt;div class=&quot;ms-webpart-chrome ms-webpart-chrome-vertical &quot; style=&quot;width:800px&quot;&gt;
+	&lt;div WebPartID=&quot;27e9e6b7-359c-4209-8281-905d6347142c&quot; HasPers=&quot;false&quot; id=&quot;WebPartWPQ2&quot; class=&quot;ms-WPBody &quot; allowDelete=&quot;false&quot; style=&quot;width:800px;overflow:auto;&quot; &gt;&lt;div id=&quot;WebPartContent&quot;&gt;&lt;div id=&quot;cbqwpTitleBar_g_27e9e6b7_359c_4209_8281_905d6347142c&quot; class=&quot;cbq-layout-main&quot;&gt;&lt;ul class=&quot;dfwp-column dfwp-list&quot; style=&quot;width:100%&quot; &gt;&lt;li class=&quot;dfwp-item&quot;&gt;&lt;div class=&quot;groupheader item medium&quot;&gt;Group Header&lt;/div&gt;&lt;ul class=&quot;dfwp-list&quot;&gt;&lt;li class=&quot;dfwp-item&quot;&gt;&lt;div class=&quot;item&quot;&gt;&lt;div class=&quot;link-item&quot;&gt;&lt;a href=&quot;http://Item1&quot; title=&quot;&quot;&gt;Item 1&lt;/a&gt;&lt;div class=&quot;description&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li class=&quot;dfwp-item&quot;&gt;&lt;div class=&quot;item&quot;&gt;&lt;div class=&quot;link-item&quot;&gt;&lt;a href=&quot;http://Item2&quot; title=&quot;&quot;&gt;Item 2&lt;/a&gt;&lt;div class=&quot;description&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li class=&quot;dfwp-item&quot;&gt;&lt;div class=&quot;item&quot;&gt;&lt;div class=&quot;link-item&quot;&gt;&lt;a href=&quot;http://Item3&quot; title=&quot;&quot;&gt;Item 3&lt;/a&gt;&lt;div class=&quot;description&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;/Style%20Library/en-US/Themable/Core%20Styles/controls15.css&quot;/&gt;
+&lt;/div&gt;&lt;div class=&quot;ms-clear&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+	&lt;/div&gt;&lt;div class=&quot;ms-clear&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;" __MarkupType="vsattributemarkup" __WebPartId="{27E9E6B7-359C-4209-8281-905D6347142C}" WebPart="true" Height="" Width="800px"><Xsl>
+<xsl:stylesheet xmlns:x="http://www.w3.org/2001/XMLSchema" version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:cmswrt="http://schemas.microsoft.com/WebPart/v3/Publishing/runtime" exclude-result-prefixes="xsl cmswrt x" > <xsl:import href="/Style Library/XSL Style Sheets/Header.xsl" /> <xsl:import href="/Style Library/XSL Style Sheets/ItemStyle.xsl" /> <xsl:import href="/Style Library/XSL Style Sheets/ContentQueryMain.xsl" /> </xsl:stylesheet></Xsl>
+<SampleData>
+<dsQueryResponse>
+                    <Rows>
+                        <Row Title="Item 1" LinkUrl="http://Item1" Group="Group Header" __begincolumn="True" __begingroup="True" />
+                        <Row Title="Item 2" LinkUrl="http://Item2" __begincolumn="False" __begingroup="False" />
+                        <Row Title="Item 3" LinkUrl="http://Item3" __begincolumn="False" __begingroup="False" />
+                    </Rows>
+                    </dsQueryResponse></SampleData>
+<DataFields>
+</DataFields>
+</WpNs1:ContentByQueryWebPart>
+
+</ZoneTemplate></WebPartPages:WebPartZone>
+    </div>
+
+</asp:Content>
+
+<asp:Content ContentPlaceHolderId="PlaceHolderSearchArea" runat="server">
+	<SharePoint:DelegateControl runat="server"
+		ControlId="SmallSearchInputBox" __designer:Preview="&lt;div class=&quot;ms-webpart-chrome ms-webpart-chrome-fullWidth &quot;&gt;
+	&lt;div WebPartID=&quot;00000000-0000-0000-0000-000000000000&quot; HasPers=&quot;true&quot; id=&quot;WebPart&quot; width=&quot;100%&quot; class=&quot;ms-WPBody &quot; OnlyForMePart=&quot;true&quot; allowDelete=&quot;false&quot; style=&quot;&quot; &gt;&lt;div componentid=&quot;SmallSearchInputBox1_csr&quot; id=&quot;SmallSearchInputBox1_csr&quot;&gt;&lt;div id=&quot;SearchBox&quot; name=&quot;Control&quot;&gt;&lt;div class=&quot;ms-srch-sb ms-srch-sb-border&quot; id=&quot;SmallSearchInputBox1_csr_sboxdiv&quot;&gt;&lt;input type=&quot;text&quot; value=&quot;Search...&quot; maxlength=&quot;2048&quot; accessKey=&quot;S&quot; title=&quot;Search...&quot; id=&quot;SmallSearchInputBox1_csr_sbox&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; onkeypress=&quot;EnsureScriptFunc(&#39;Search.ClientControls.js&#39;, &#39;Srch.U&#39;, function() {if (Srch.U.isEnterKey(String.fromCharCode(event.keyCode))) {$find(&#39;SmallSearchInputBox1_csr&#39;).search($get(&#39;SmallSearchInputBox1_csr_sbox&#39;).value);return Srch.U.cancelEvent(event);}})&quot; onkeydown=&quot;EnsureScriptFunc(&#39;Search.ClientControls.js&#39;, &#39;Srch.U&#39;, function() {var ctl = $find(&#39;SmallSearchInputBox1_csr&#39;);ctl.activateDefaultQuerySuggestionBehavior();})&quot; onfocus=&quot;EnsureScriptFunc(&#39;Search.ClientControls.js&#39;, &#39;Srch.U&#39;, function() {var ctl = $find(&#39;SmallSearchInputBox1_csr&#39;);ctl.hidePrompt();ctl.setBorder(true);})&quot; onblur=&quot;EnsureScriptFunc(&#39;Search.ClientControls.js&#39;, &#39;Srch.U&#39;, function() {var ctl = $find(&#39;SmallSearchInputBox1_csr&#39;); if (ctl){ ctl.showPrompt(); ctl.setBorder(false);}})&quot; class=&quot;ms-textSmall ms-srch-sb-prompt ms-helperText&quot;/&gt;&lt;a title=&quot;Search&quot; class=&quot;ms-srch-sb-searchLink&quot; id=&quot;SmallSearchInputBox1_csr_SearchLink&quot; onclick=&quot;EnsureScriptFunc(&#39;Search.ClientControls.js&#39;, &#39;Srch.U&#39;, function() {$find(&#39;SmallSearchInputBox1_csr&#39;).search($get(&#39;SmallSearchInputBox1_csr_sbox&#39;).value);})&quot; href=&quot;javascript: {}&quot; &gt;&lt;img src=&quot;/_layouts/15/images/searchresultui.png?rev=23&quot; class=&quot;ms-srch-sb-searchImg&quot; id=&quot;searchImg&quot; alt=&quot;Search&quot; /&gt;&lt;/a&gt;&lt;div class=&quot;ms-qSuggest-container ms-shadow&quot; id=&quot;AutoCompContainer&quot;&gt;&lt;div id=&quot;SmallSearchInputBox1_csr_AutoCompList&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;noscript&gt;&lt;div id=&quot;SmallSearchInputBox1_noscript&quot;&gt;It looks like your browser does not have JavaScript enabled. Please turn on JavaScript and try again.&lt;/div&gt;&lt;/noscript&gt;&lt;div id=&quot;SmallSearchInputBox1&quot;&gt;
+
+	&lt;/div&gt;&lt;div class=&quot;ms-clear&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;" __designer:Values="&lt;P N=&#39;ControlId&#39; T=&#39;SmallSearchInputBox&#39; /&gt;&lt;P N=&#39;ID&#39; ID=&#39;1&#39; T=&#39;ctl00&#39; /&gt;&lt;P N=&#39;Page&#39; ID=&#39;2&#39; /&gt;&lt;P N=&#39;TemplateControl&#39; R=&#39;2&#39; /&gt;&lt;P N=&#39;AppRelativeTemplateSourceDirectory&#39; R=&#39;-1&#39; /&gt;"/>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderId="PlaceHolderPageDescription" runat="server">
+	<SharePoint:ProjectProperty Property="Description" runat="server" __designer:Preview="" __designer:Values="&lt;P N=&#39;Property&#39; T=&#39;Description&#39; /&gt;&lt;P N=&#39;InDesign&#39; T=&#39;False&#39; /&gt;&lt;P N=&#39;ID&#39; ID=&#39;1&#39; T=&#39;ctl01&#39; /&gt;&lt;P N=&#39;Page&#39; ID=&#39;2&#39; /&gt;&lt;P N=&#39;TemplateControl&#39; R=&#39;2&#39; /&gt;&lt;P N=&#39;AppRelativeTemplateSourceDirectory&#39; R=&#39;-1&#39; /&gt;"/>
+</asp:Content>
+

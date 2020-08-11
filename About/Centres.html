@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <title></title>
+
+    <!--[if gte mso 9]>
+	    <xml>
+	    <mso:CustomDocumentProperties>
+	    <mso:_dlc_DocId msdt:dt="string">XZ5JH7FU5RF2-9-12</mso:_dlc_DocId>
+	    <mso:_dlc_DocIdItemGuid msdt:dt="string">b439ffdf-aeed-478f-8be4-fbd6a6f7e975</mso:_dlc_DocIdItemGuid>
+	    <mso:_dlc_DocIdUrl msdt:dt="string">https://intranet.chda.maxuk.co.uk/about/_layouts/15/DocIdRedir.aspx?ID=XZ5JH7FU5RF2-9-12, XZ5JH7FU5RF2-9-12</mso:_dlc_DocIdUrl>
+	    </mso:CustomDocumentProperties>
+	    </xml>
+    <![endif]-->
+
+    <link rel="stylesheet" href="https://intranet.chda.maxuk.co.uk/Style%20Library/styles/custom.css" />
+    <link rel="stylesheet" href="https://intranet.chda.maxuk.co.uk/_catalogs/masterpage/ShareBoot/css/bootstrap.css" />
+
+    <script type="text/javascript" src="https://intranet.chda.maxuk.co.uk/_catalogs/masterpage/ShareBoot/js/jquery.min.js"></script>
+    <script type="text/javascript" src="https://intranet.chda.maxuk.co.uk/_catalogs/masterpage/ShareBoot/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/Style Library/scripts/jquery.SPServices-2014.02.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row CHDACentres">
+            <div class="col-md-6">
+                <h3>CHDA Business Support Centre&#39;s</h3>
+                <div class="row">
+                    <div class="col-md-3">
+                        <h4>Location</h4>
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="contactTitle">Contact Details</h4>
+                    </div>
+                </div>
+                <div class="row CentresDataBox">
+                    <div id="bscContact"></div>
+                </div>
+            </div>
+
+            <div class="col-md-6 acSection">
+                <h3>CHDA Assessment Centre&#39;s</h3>
+                <p>Coming Soon... This will be in place by May 2017 and will contain links to all maps and contact details for the ACs.</p>
+               <!-- <div class="row">
+                    <div class="col-md-3">
+                        <h4>Location</h4>
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="contactTitle">Contact Details</h4>
+                    </div>
+                </div>
+                <div class="row CentresDataBox">
+                    <div id="acContact"></div>
+                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        if (typeof (MSOLayout_MakeInvisibleIfEmpty) == "function") {
+            MSOLayout_MakeInvisibleIfEmpty();
+        }
+
+        $(document).ready(function () {
+
+            var bscList = "ServiceCenters"
+            var bscFields = "<ViewFields>" +
+                            "<FieldRef Name='ID' />" +
+                            "<FieldRef Name='Title' />" +
+                            "<FieldRef Name='jobRole' />" +
+                            "<FieldRef Name='name' />" +
+                            "<FieldRef Name='contact' />" +
+                            "<FieldRef Name='Phone' />" +
+                            "<FieldRef Name='EmailAddress' />" +
+                            "</ViewFields>";
+
+            $().SPServices({
+                operation: "GetListItems",
+                async: false,
+                listName: bscList,
+                CAMLViewFields: bscFields, //"<ViewFields><FieldRef Name='ID' /><FieldRef Name='Title' /></ViewFields>",
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).SPFilterNode("z:row").each(function () {
+
+                        // Setup Variables and assign SP list item
+                        var id = ($(this).attr("ows_ID"));
+                        var centre = ($(this).attr("ows_Title"));
+                        var role = ($(this).attr("ows_jobRole"));
+                        var firstName = ($(this).attr("ows_name"));
+                        var name = ($(this).attr("ows_contact"));
+                        var nameLen = name.length;
+                        var name = name.substr(8, nameLen - 8);
+                        var email = ($(this).attr("ows_EmailAddress"));
+                        var phone = ($(this).attr("ows_Phone"));
+                        var centreType;
+
+                        //alert(role);
+
+                        // Assign variable to HTML #Tag so it is displayed on the page
+                        if (role === "BSC") {
+                            centreType = "#bscContact";
+                        } else {
+                            centreType = "#acContact";
+                        }
+
+                        $(centreType).append("<div class='col-md-4'>" + centre + "</div>" +
+                                                "<div class='col-md-4 contactAdjust'>" + name + "</div>" +
+                                                "<div class='col-md-4'><i class='fa fa-phone'></i>&nbsp" + phone +
+                                                "&nbsp&nbsp<a href='mailto:" + email + "?subject=Contact from CHDA&body=Hi " + firstName + "'><i class='fa fa-envelope'></i></a></div>");
+                    });
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>

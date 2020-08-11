@@ -1,0 +1,400 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" x-undefined="" />
+    <title>Gallery Isotope</title>
+
+    <link rel="stylesheet" type="text/css" href="/style library/styles/custom.css" />
+    <link rel="stylesheet" type="text/css" href="/_catalogs/masterpage/shareboot/css/bootstrap.min.css" />
+    <style>
+        /*****  Image Gallery *****/
+        /* ---- grid ---- */
+
+        .gallerybutton {
+            display: inline-block;
+            padding: 0.5em 1.0em;
+            background-color: #ddddeb;
+            border: none;
+            border-radius: 7px;
+            background-image: linear-gradient( to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0.2) );
+            color: #545487;
+            font-family: Arial;
+            font-size: 16px;
+            text-shadow: 0 1px #7676b8;
+            cursor: pointer;
+        }
+
+            .gallerybutton:hover {
+                background-color: #7676b8;
+                text-shadow: 0 1px hsla(0, 0%, 100%, 0.5);
+                color: white;
+            }
+
+            .gallerybutton:active,
+            .gallerybutton.is-checked {
+                background-color: #7676b8;
+            }
+
+            .gallerybutton.is-checked {
+                color: white;
+                text-shadow: 0 -1px hsla(0, 0%, 0%, 0.8);
+            }
+
+            .gallerybutton:active {
+                box-shadow: inset 0 1px 10px hsla(0, 0%, 0%, 0.8);
+            }
+
+        /* ---- button-group ---- */
+
+        .btn-group-vertical {
+            margin-bottom: 20px;
+        }
+
+            .btn-group-vertical:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+            .btn-group-vertical .gallerybutton {
+                float: left;
+                border-radius: 0;
+                margin: 0 1px 5px 0;
+            }
+
+                .btn-group-vertical .gallerybutton:first-child {
+                    border-radius: 0.5em 0 0 0.5em;
+                }
+
+                .btn-group-vertical .gallerybutton:last-child {
+                    border-radius: 0 0.5em 0.5em 0;
+                }
+
+        /* ---- isotope ---- */
+        .grid {
+            height: 90vh !important;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+            .grid::-webkit-scrollbar {
+                background-color: #ddddeb
+            }
+
+            .grid::-webkit-scrollbar-track {
+                background-color: white
+            }
+
+            .grid::-webkit-scrollbar-thumb {
+                background-color: #7676b8;
+                border-radius: 10px
+            }
+
+            /* clear fix */
+            .grid:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+        /* ---- .galleryItem ---- */
+
+        .galleryItem {
+            position: relative;
+            float: left;
+            width: 100px;
+            height: 100px;
+            margin: 5px;
+            padding: 5px;
+            background: #ddddeb;
+            color: #545487;
+        }
+
+            .galleryItem > * {
+                margin: 0;
+                padding: 0;
+            }
+
+        div:empty {
+            display: inherit
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 99; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 80%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: #7676b8; /* Fallback color */
+            background-color: rgba(219,220,244,0.9); /* Black w/ opacity */
+        }
+
+            .modal::-webkit-scrollbar {
+                width: 10px;
+                background-color: #fff;
+            }
+
+            .modal::-webkit-scrollbar-track {
+                box-shadow: inset 0 0 6px rgba(221,221,235,0.3);
+                border-radius: 10px;
+                background-color: #fff;
+            }
+
+            .modal::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                box-shadow: inset 0 0 6px rgba(221,221,235,.3);
+                background-color: #545487;
+            }
+
+        /* Modal Content (Image) */
+        .modal-content {
+            position:relative;
+            top:-30px;
+            margin: auto;
+            display: block;
+            width: 80vw;
+            max-width: 70vw;
+        }
+
+        /* Caption of Modal Image (Image Text) - Same Width as the Image */
+        #title {
+            position:absolute;
+            top:0;
+            left:15%;
+            margin: auto;
+            display: block;
+            width: 100%;
+            max-width: 70%;
+            text-align: center;
+            color: #545487;
+            font-size: 1.4em;
+            font-weight: bolder;
+            height: 50px;
+
+        }
+
+        #caption {
+            background-color:#7676b8;
+            color:white;
+            opacity:0.8;
+            position:relative;
+            top:-30px;
+            margin: auto;
+            display: block;
+            width: 80vw;
+            max-width: 70vw;
+            border-radius:10px;
+            box-shadow: inset 0 0 6px rgba(221,221,235,.3);
+        }
+
+        #caption h5 {padding:5px}
+
+        /* Add Animation - Zoom in the Modal */
+        .modal-content, #title, #caption {
+            animation-name: zoom;
+            animation-duration: 0.6s;
+        }
+
+        @keyframes zoom {
+            from {
+                transform: scale(0)
+            }
+
+            to {
+                transform: scale(1)
+            }
+        }
+
+        /* The Close Button */
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #c95828;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .close:hover,
+            .close:focus {
+                color: #7676b8;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        /* 100% Image Width on Smaller Screens */
+        @media only screen and (max-width: 700px) {
+
+        }
+
+        @media screen and (min-width:1200px) and (max-width:1400px) {
+            .grid {
+                height: 91vh !important;
+            }
+        }
+
+    </style>
+
+    <!--[if gte mso 9]><xml>
+    <mso:CustomDocumentProperties>
+    <mso:_dlc_DocId msdt:dt="string">XZ5JH7FU5RF2-9-59</mso:_dlc_DocId>
+    <mso:_dlc_DocIdItemGuid msdt:dt="string">739f3864-1138-4992-8e66-8ad2c6ea29da</mso:_dlc_DocIdItemGuid>
+    <mso:_dlc_DocIdUrl msdt:dt="string">https://intranet.chda.maxuk.co.uk/about/_layouts/15/DocIdRedir.aspx?ID=XZ5JH7FU5RF2-9-59, XZ5JH7FU5RF2-9-59</mso:_dlc_DocIdUrl>
+    </mso:CustomDocumentProperties>
+    </xml><![endif]-->
+</head>
+
+<body>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <div id="title"></div>
+        <img class="modal-content" id="modalImg" />
+        <div id="caption"></div>
+    </div>
+
+    <div id="filters" class="btn-group-vertical col-xs-4 col-sm-4 col-md-4 col-lg-4 scrollbar">
+        <button class="btn gallerybutton is-checked" data-filter="*">Show All</button>
+    </div>
+
+    <div class="grid col-xs-8 col-sm-8 col-md-8 col-lg-8" id="gridItems">
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="text/javascript" src="/_catalogs/masterpage/shareboot/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/_catalogs/masterpage/shareboot/js/jquery.SPServices.min.js"></script>
+    <script type="text/javascript" src="/_catalogs/masterpage/shareboot/js/isotope.pkgd.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+
+    <script type="text/javascript">
+
+        var categories = [];
+        var filterName = [];
+        var $grid = $('.grid');
+
+        $(function () {
+            getData();
+
+            // init Isotope
+            $grid.imagesLoaded(function () {
+                $grid.isotope({
+                    animationOptions: {
+                        duration: 750,
+                        easing: 'linear',
+                        queue: false
+                    },
+                    itemSelector: '.galleryItem',
+                    masonry: {
+                        columnWidth: 100
+                    },
+                    percentPosition: true,
+                    layoutMode: 'fitRows'
+                });
+            })
+        })
+
+        // bind filter button click
+        $('#filters').on('click', 'button', function () {
+            var filterValue = $(this).attr('data-filter');
+            console.log('filter=' + filterValue);
+            $grid.isotope({ filter: filterValue });
+        });
+
+        // change is-checked class on buttons
+        $('.btn-group-vertical').each(function (i, buttonGroup) {
+            var $buttonGroup = $(buttonGroup);
+            $buttonGroup.on('click', 'button', function () {
+                $buttonGroup.find('.is-checked').removeClass('is-checked');
+                $(this).addClass('is-checked');
+            });
+        });
+
+        function getData() {
+
+            var method1 = "GetList";
+            var list = "Quality Gallery";
+            var catID = 0;
+            var imgID = 0;
+
+            $().SPServices({
+                async: false,
+                operation: method1,
+                listName: list,
+                completefunc: function (xData, Status) {
+
+                    $(xData.responseXML).find("Field[DisplayName='Category'] CHOICE").each(function () {
+                        categories[catID] = $(this).text();
+                        filterName[catID] = "category" + (catID + 1);
+                        catID++
+                    });
+                }
+            });
+            categories.sort();
+
+            for (var i = 0; i < categories.length; i++) {
+                $('#filters').append('<button class="btn gallerybutton" data-filter=".' + filterName[i] + '">' + categories[i] + '</button>');
+            }
+
+            var method2 = "GetListItems";
+            var fields = "<ViewFields>" +
+                "<FieldRef Name='LinkFilename' />" +
+                "<FieldRef Name='Category' />" +
+                "<FieldRef Name='Title' />" +
+                "<FieldRef Name='Description' />" +
+                "</ViewFields>";
+            $().SPServices({
+                operation: method2,
+                async: false,
+                listName: list,
+                CAMLViewFields: fields,
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).SPFilterNode("z:row").each(function () {
+
+                        // assign SP list item
+                        var imageLink = $(this).attr("ows_LinkFilename");
+                        var imageCategory = $(this).attr("ows_Category");
+                        var imageTitle = $(this).attr("ows_Title");
+                        var imageCaption = $(this).attr("ows_Description");
+
+                        if (imageTitle === undefined) { imageTitle = "No title supplied" }
+                        if (imageCaption === undefined) { imageCaption = "No description supplied" }
+
+                        for (var i = 0; i < categories.length; i++) {
+                            if (imageCategory === categories[i]) {
+                                $('#gridItems').append('<img onclick="modalPop(this.src,\'' + imageTitle + '\',\'' + imageCaption + '\')" class="galleryItem ' + filterName[i] + '" data-category="' + filterName[i] + '" src="/about/Quality%20Gallery/' + imageLink + '" width="100px" height="100px" >');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        function modalPop(imgSrc, title, caption) {
+            $('#myModal').css("display", "block");
+            $('#modalImg').prop('src', imgSrc);
+            $('#title').empty();
+            $('#title').append('<h2>' + title + '</h2>');
+            $('#caption').empty();
+            $('#caption').append('<h5>' + caption + '</h5>');
+        }
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            $('#myModal').css("display", "none");
+        }
+
+    </script>
+</body>
+
+</html>
